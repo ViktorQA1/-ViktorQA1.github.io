@@ -1,0 +1,168 @@
+{
+	"info": {
+		"_postman_id": "bc3108fd-7c56-4622-914f-9bae35ba27c4",
+		"name": "New Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27246047",
+		"_collection_link": "https://bold-capsule-32255.postman.co/workspace/Team-Workspace~fe35e427-9273-45dd-8afa-2d44eba63414/collection/27246047-bc3108fd-7c56-4622-914f-9bae35ba27c4?action=share&creator=27246047&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "создание 1 in 3 Copy",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"function sendRequest(requestOptions) {\r",
+							"  return new Promise(function(resolve, reject) {\r",
+							"    pm.sendRequest(requestOptions, function(err, response) {\r",
+							"      if (err) {\r",
+							"        reject(err);\r",
+							"      } else {\r",
+							"        resolve(response);\r",
+							"      }\r",
+							"    });\r",
+							"  });\r",
+							"}\r",
+							"\r",
+							"// Отправка POST-запроса\r",
+							"sendRequest({\r",
+							"  url: 'https://api.pokemonbattle.me:9104/pokemons',\r",
+							"  method: 'POST',\r",
+							"  header: {\r",
+							"    'Content-Type': 'application/json',\r",
+							"    'trainer_token': 'ваш токен'\r",
+							"  },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({ \r",
+							"      'name': pm.variables.replaceIn(\"{{$randomFirstName}}\"),\r",
+							"      'photo': 'https://dolnikov.ru/pokemons/albums/025.png'\r",
+							"    })\r",
+							"  }\r",
+							"})\r",
+							"  .then(function(response) {\r",
+							"    console.log(response);\r",
+							"    console.log(response.json()); \r",
+							"    var pokemon_id = response.json(); \r",
+							"    pm.collectionVariables.set(\"pokemon_id\", pokemon_id.id); \r",
+							"\r",
+							"      return sendRequest({\r",
+							"        url: 'https://api.pokemonbattle.me:9104/trainers/add_pokeball',\r",
+							"        method: 'POST',\r",
+							"        header: {\r",
+							"          'trainer_token': 'ваш токен',\r",
+							"          'Content-Type': 'application/json'\r",
+							"        },\r",
+							"        body: {\r",
+							"          mode: 'raw',\r",
+							"          raw: JSON.stringify({ \r",
+							"            'pokemon_id': pm.collectionVariables.get(\"pokemon_id\")\r",
+							"          })\r",
+							"        }\r",
+							"      });\r",
+							"    })\r",
+							"  .then(function(response) {\r",
+							"    console.log(response);\r",
+							"    \r",
+							"    // Отправка GET-запроса\r",
+							"    return sendRequest({\r",
+							"      url: 'https://api.pokemonbattle.me:9104/pokemons?in_pokeball=1',\r",
+							"      method: 'GET',\r",
+							"      header: {\r",
+							"        'trainer_token': 'ваш токен',\r",
+							"        'Content-Type': 'application/json'\r",
+							"      }\r",
+							"    });\r",
+							"  })\r",
+							"  .then(function(response) {\r",
+							"    console.log(response);\r",
+							"    console.log(response.json());\r",
+							"    var defending_pokemon_id = response.json();\r",
+							"    pm.collectionVariables.set(\"defending_pokemon\", defending_pokemon_id[4].id);\r",
+							"  })\r",
+							"  .then(function(response) {\r",
+							"    console.log(response);\r",
+							"  })\r",
+							"  .catch(function(err) {\r",
+							"    console.log(err);\r",
+							"  });\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "trainer_token",
+						"value": "{{trainer_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"attacking_pokemon\": \"{{pokemon_id}}\",\r\n    \"defending_pokemon\": \"{{defending_pokemon}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/battle",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"battle"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "pokemon_id",
+			"value": ""
+		},
+		{
+			"key": "defending_pokemon",
+			"value": ""
+		}
+	]
+}
